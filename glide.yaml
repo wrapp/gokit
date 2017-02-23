@@ -1,0 +1,3 @@
+package: github.com/wrapp/gokit
+import:
+- package: github.com/urfave/negroni

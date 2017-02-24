@@ -28,6 +28,6 @@ func main() {
 	//}...)
 
 	fmt.Printf("Starting service '%s'...\n", service.Name())
-	err := http.ListenAndServe(":8080", service.Handler())
+	err := service.ListenAndServe(":8080")
 	fmt.Println(err)
 }

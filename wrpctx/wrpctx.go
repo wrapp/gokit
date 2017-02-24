@@ -33,5 +33,5 @@ func NewWithValue(ctx context.Context, key string, value interface{}) context.Co
 }
 
 func GetCtxValue(ctx context.Context, key string) interface{} {
-	return ctx.Value(keyType(mapKey))
+	return ctx.Value(keyType(key))
 }

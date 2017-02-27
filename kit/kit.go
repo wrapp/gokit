@@ -11,7 +11,6 @@ import (
 	"context"
 
 	"github.com/urfave/negroni"
-	"github.com/wrapp/gokit/middleware/errormw"
 	"github.com/wrapp/gokit/middleware/wrpctxmw"
 )
 
@@ -83,7 +82,6 @@ func Classic(name string, handler http.Handler) Service {
 	return NewService(
 		name,
 		wrpctxmw.New(),
-		errormw.New(),
 		negroni.Wrap(handler),
 	)
 }

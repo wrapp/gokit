@@ -8,20 +8,33 @@ type ctxMap map[keyType]interface{}
 const mapKey = "wrpctx"
 
 func Set(ctx context.Context, key string, value interface{}) {
-	if cm := ctx.Value(keyType(mapKey)); cm != nil {
-		if m, ok := cm.(ctxMap); ok {
-			m[keyType(key)] = value
-		}
+	cm := ctx.Value(keyType(mapKey))
+
+	if cm == nil {
+		return
 	}
+
+	m, ok := cm.(ctxMap)
+	if !ok {
+		return
+	}
+
+	m[keyType(key)] = value
 }
 
 func Get(ctx context.Context, key string) interface{} {
-	if cm := ctx.Value(keyType(mapKey)); cm != nil {
-		if m, ok := cm.(ctxMap); ok {
-			return m[keyType(key)]
-		}
+	cm := ctx.Value(keyType(mapKey))
+
+	if cm == nil {
+		return nil
 	}
-	return nil
+
+	m, ok := cm.(ctxMap)
+	if !ok {
+		return nil
+	}
+
+	return m[keyType(key)]
 }
 
 func New(ctx context.Context) context.Context {
@@ -34,4 +47,23 @@ func NewWithValue(ctx context.Context, key string, value interface{}) context.Co
 
 func GetCtxValue(ctx context.Context, key string) interface{} {
 	return ctx.Value(keyType(key))
+}
+
+func GetMap(ctx context.Context) map[string]interface{} {
+	newMap := make(map[string]interface{})
+	cm := ctx.Value(keyType(mapKey))
+
+	if cm == nil {
+		return newMap
+	}
+
+	m, ok := cm.(ctxMap)
+	if !ok {
+		return newMap
+	}
+
+	for key, value := range m {
+		newMap[string(key)] = value
+	}
+	return newMap
 }

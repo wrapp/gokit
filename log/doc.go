@@ -1,0 +1,2 @@
+// structured logging
+package log

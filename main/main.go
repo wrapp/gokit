@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"net/http"
 
+	log "github.com/Sirupsen/logrus"
 	"github.com/wrapp/gokit/kit"
+	_ "github.com/wrapp/gokit/log"
 	"github.com/wrapp/gokit/middleware/errormw"
 	"github.com/wrapp/gokit/wrpctx"
 )
@@ -12,7 +14,9 @@ import (
 func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
+		wrpctx.Set(req.Context(), "key", "value")
 		fmt.Fprintf(w, "Welcome to the home page!")
+		log.WithFields(log.Fields(wrpctx.GetMap(req.Context()))).Info("Log context...")
 	})
 
 	mux.HandleFunc("/err", func(w http.ResponseWriter, req *http.Request) {
@@ -28,6 +32,6 @@ func main() {
 	//}...)
 
 	fmt.Printf("Starting service '%s'...\n", service.Name())
-	err := service.ListenAndServe(":8080")
+	err := service.ListenAndServe("localhost:8080")
 	fmt.Println(err)
 }

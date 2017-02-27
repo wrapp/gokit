@@ -1,6 +1,12 @@
-hash: 9a3711f8431f9c3a487e03b42191f73f197ea88dad89f56d8fc7b030bd91abe1
-updated: 2017-02-23T11:59:56.493273615+01:00
+hash: fb7bf06dc5e61514abbd02043f1c7851128f19cf97dd904cd4588097cadf2fb7
+updated: 2017-02-27T19:28:02.618976698+01:00
 imports:
+- name: github.com/Sirupsen/logrus
+  version: 0208149b40d863d2c1a2f8fe5753096a9cf2cc8b
 - name: github.com/urfave/negroni
   version: 3c4d1f44e5d9d1eb5acf3c661a17aaa837d1a067
+- name: golang.org/x/sys
+  version: a646d33e2ee3172a661fc09bca23bb4889a41bc8
+  subpackages:
+  - unix
 testImports: []

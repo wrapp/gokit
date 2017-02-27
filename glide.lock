@@ -1,12 +1,14 @@
-hash: fb7bf06dc5e61514abbd02043f1c7851128f19cf97dd904cd4588097cadf2fb7
-updated: 2017-02-27T19:28:02.618976698+01:00
+hash: 90d56c5e920cc410367b2d41b0c0da2c7fd98b78c886c2d1f310939dff42fb84
+updated: 2017-02-27T20:46:31.721090848+01:00
 imports:
+- name: github.com/satori/go.uuid
+  version: b061729afc07e77a8aa4fad0a2fd840958f1942a
 - name: github.com/Sirupsen/logrus
   version: 0208149b40d863d2c1a2f8fe5753096a9cf2cc8b
 - name: github.com/urfave/negroni
-  version: 3c4d1f44e5d9d1eb5acf3c661a17aaa837d1a067
+  version: c0db5feaa33826cd5117930c8f4ee5c0f565eec6
 - name: golang.org/x/sys
-  version: a646d33e2ee3172a661fc09bca23bb4889a41bc8
+  version: e4594059fe4cde2daf423055a596c2cd1e6c9adf
   subpackages:
   - unix
 testImports: []

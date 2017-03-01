@@ -14,9 +14,10 @@ import (
 func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
-		wrpctx.Set(req.Context(), "key", "value")
-		fmt.Fprintf(w, "Welcome to the home page!")
-		log.WithFields(log.Fields(wrpctx.GetMap(req.Context()))).Info("Log context...")
+		ctx := req.Context()
+		wrpctx.Set(ctx, "key", "value")
+		fmt.Fprintf(w, "(%s) %s", wrpctx.Get(ctx, "Request-Id"), "Welcome to the home page!")
+		log.WithFields(log.Fields(wrpctx.GetMap(ctx))).Info("Log context...")
 	})
 
 	mux.HandleFunc("/err", func(w http.ResponseWriter, req *http.Request) {

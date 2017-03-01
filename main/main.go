@@ -1,10 +1,9 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"net/http"
-
-	"context"
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/wrapp/gokit/kit"

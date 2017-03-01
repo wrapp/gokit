@@ -1,14 +1,11 @@
 package kit
 
 import (
+	"context"
 	"net/http"
-
-	"time"
-
 	"os"
 	"os/signal"
-
-	"context"
+	"time"
 
 	"github.com/urfave/negroni"
 
@@ -81,9 +78,14 @@ func NewService(handlers ...negroni.Handler) Service {
 }
 
 func Classic(handler http.Handler) Service {
+	recoverymw := negroni.NewRecovery()
+	recoverymw.ErrorHandlerFunc = recoveryHandlerFunc
+	recoverymw.PrintStack = false
+
 	return NewService(
 		wrpctxmw.New(),
 		requestidmw.New(),
+		recoverymw,
 		negroni.Wrap(handler),
 	)
 }

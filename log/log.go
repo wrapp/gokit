@@ -2,10 +2,10 @@ package log
 
 import (
 	"os"
-
 	"time"
 
 	"github.com/Sirupsen/logrus"
+
 	"github.com/wrapp/gokit/env"
 )
 

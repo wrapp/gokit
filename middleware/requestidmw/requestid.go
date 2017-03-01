@@ -1,11 +1,11 @@
 package requestidmw
 
 import (
+	"context"
 	"net/http"
 
-	"context"
-
 	uuid "github.com/satori/go.uuid"
+
 	"github.com/wrapp/gokit/wrpctx"
 )
 

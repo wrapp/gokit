@@ -7,6 +7,7 @@ import (
 	log "github.com/Sirupsen/logrus"
 	"github.com/wrapp/gokit/kit"
 	"github.com/wrapp/gokit/middleware/errormw"
+	"github.com/wrapp/gokit/middleware/requestidmw"
 	"github.com/wrapp/gokit/wrpctx"
 )
 
@@ -15,7 +16,7 @@ func main() {
 	mux.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
 		ctx := req.Context()
 		wrpctx.Set(ctx, "key", "value")
-		fmt.Fprintf(w, "(%s) %s", wrpctx.Get(ctx, "request-id"), "Welcome to the home page!")
+		fmt.Fprintf(w, "(%s) %s", requestidmw.GetID(ctx), "Welcome to the home page!")
 		log.WithFields(log.Fields(wrpctx.GetMap(ctx))).Info("Log context...")
 	})
 

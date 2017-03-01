@@ -3,27 +3,26 @@ package requestidmw
 import (
 	"net/http"
 
+	"context"
+
 	uuid "github.com/satori/go.uuid"
 	"github.com/wrapp/gokit/wrpctx"
 )
 
 const (
 	defaultHeaderKey = "X-Request-Id"
-	defaultCtxKey    = "request-id"
+	ctxKey           = "request-id"
 )
 
 type XRequestIDHandler struct {
 	HeaderKey    string
-	CtxKey       string
 	GenerateFunc func() string
 }
 
 func (h XRequestIDHandler) ServeHTTP(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 	id, _ := h.getOrGenerate(r)
-	if h.CtxKey != "" {
-		w.Header().Set(h.HeaderKey, id)
-		wrpctx.Set(r.Context(), h.CtxKey, id)
-	}
+	w.Header().Set(h.HeaderKey, id)
+	wrpctx.Set(r.Context(), ctxKey, id)
 	next(w, r)
 }
 
@@ -40,9 +39,12 @@ func generateUUID() string {
 	return uuid.NewV4().String()
 }
 
+func GetID(ctx context.Context) string {
+	return wrpctx.Get(ctx, ctxKey).(string)
+}
+
 func New() XRequestIDHandler {
 	return XRequestIDHandler{
-		CtxKey:       defaultCtxKey,
 		HeaderKey:    defaultHeaderKey,
 		GenerateFunc: generateUUID,
 	}

@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/sethgrid/pester"
+	"github.com/wrapp/gokit/env"
 	"github.com/wrapp/gokit/middleware/requestidmw"
 )
 
@@ -55,17 +56,17 @@ func (t *TraceClient) PostForm(url string, data url.Values) (*http.Response, err
 	return t.Post(url, "application/x-www-form-urlencoded", strings.NewReader(data.Encode()))
 }
 
-func NewClient(name string, rIdFunc RequestIDFunc) *TraceClient {
+func NewClient(rIdFunc RequestIDFunc) *TraceClient {
 	client := pester.New()
 	client.Backoff = pester.LinearBackoff
 	client.MaxRetries = 3
-	return NewExtendedClient(name, rIdFunc, client)
+	return NewExtendedClient(rIdFunc, client)
 }
 
-func NewExtendedClient(name string, rIdFunc RequestIDFunc, client *pester.Client) *TraceClient {
+func NewExtendedClient(rIdFunc RequestIDFunc, client *pester.Client) *TraceClient {
 	return &TraceClient{
-		Name:          name,
 		RequestIDFunc: rIdFunc,
+		Name:          env.Get("SERVICE_NAME"),
 		client:        client,
 	}
 }

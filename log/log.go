@@ -2,20 +2,33 @@ package log
 
 import (
 	"os"
-	"strings"
+
+	"time"
 
 	"github.com/Sirupsen/logrus"
+	"github.com/wrapp/gokit/env"
 )
 
 var jsonFormatter = logrus.JSONFormatter{}
 
 type wrappFormatter struct{}
 
-// Format logs according to WEP-007
 func (f *wrappFormatter) Format(entry *logrus.Entry) ([]byte, error) {
-	jsonBytes, err := (&jsonFormatter).Format(entry)
-	prefix := []byte(strings.ToUpper(entry.Level.String()) + " ")
-	return append(prefix[:], jsonBytes[:]...), err
+	name := env.Get("SERVICE_NAME")
+	host, err := os.Hostname()
+	if err != nil {
+		host = err.Error()
+	}
+
+	e := entry.WithFields(logrus.Fields{
+		"service-name": name,
+		"host":         host,
+	})
+
+	e.Time = time.Now().UTC()
+	e.Level = entry.Level
+	e.Message = entry.Message
+	return (&jsonFormatter).Format(e)
 }
 
 func init() {

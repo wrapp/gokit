@@ -10,24 +10,23 @@ import (
 )
 
 const (
-	defaultHeaderKey = "X-Request-Id"
-	ctxKey           = "request-id"
+	headerKey = "X-Request-Id"
+	ctxKey    = "request-id"
 )
 
 type XRequestIDHandler struct {
-	HeaderKey    string
 	GenerateFunc func() string
 }
 
 func (h XRequestIDHandler) ServeHTTP(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 	id, _ := h.getOrGenerate(r)
-	w.Header().Set(h.HeaderKey, id)
+	w.Header().Set(headerKey, id)
 	wrpctx.Set(r.Context(), ctxKey, id)
 	next(w, r)
 }
 
 func (h XRequestIDHandler) getOrGenerate(r *http.Request) (string, bool) {
-	id := r.Header.Get(h.HeaderKey)
+	id := r.Header.Get(headerKey)
 	if id == "" {
 		id = h.GenerateFunc()
 		return id, true
@@ -43,9 +42,12 @@ func GetID(ctx context.Context) string {
 	return wrpctx.Get(ctx, ctxKey).(string)
 }
 
+func SetID(h *http.Header, id string) {
+	h.Set(headerKey, id)
+}
+
 func New() XRequestIDHandler {
 	return XRequestIDHandler{
-		HeaderKey:    defaultHeaderKey,
 		GenerateFunc: generateUUID,
 	}
 }

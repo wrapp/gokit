@@ -6,7 +6,6 @@ import (
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/wrapp/gokit/kit"
-	_ "github.com/wrapp/gokit/log"
 	"github.com/wrapp/gokit/middleware/errormw"
 	"github.com/wrapp/gokit/wrpctx"
 )

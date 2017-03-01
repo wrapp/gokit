@@ -11,6 +11,7 @@ import (
 	"context"
 
 	"github.com/urfave/negroni"
+	_ "github.com/wrapp/gokit/log"
 	"github.com/wrapp/gokit/middleware/requestidmw"
 	"github.com/wrapp/gokit/middleware/wrpctxmw"
 )

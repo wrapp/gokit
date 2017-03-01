@@ -9,7 +9,7 @@ import (
 
 const (
 	defaultHeaderKey = "X-Request-Id"
-	defaultCtxKey    = "Request-Id"
+	defaultCtxKey    = "request-id"
 )
 
 type XRequestIDHandler struct {

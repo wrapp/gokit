@@ -15,7 +15,7 @@ func main() {
 	mux.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
 		ctx := req.Context()
 		wrpctx.Set(ctx, "key", "value")
-		fmt.Fprintf(w, "(%s) %s", wrpctx.Get(ctx, "Request-Id"), "Welcome to the home page!")
+		fmt.Fprintf(w, "(%s) %s", wrpctx.Get(ctx, "request-id"), "Welcome to the home page!")
 		log.WithFields(log.Fields(wrpctx.GetMap(ctx))).Info("Log context...")
 	})
 

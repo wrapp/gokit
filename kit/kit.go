@@ -11,6 +11,8 @@ import (
 	"context"
 
 	"github.com/urfave/negroni"
+
+	"github.com/wrapp/gokit/env"
 	_ "github.com/wrapp/gokit/log"
 	"github.com/wrapp/gokit/middleware/requestidmw"
 	"github.com/wrapp/gokit/middleware/wrpctxmw"
@@ -24,14 +26,13 @@ type Service interface {
 }
 
 type service struct {
-	name      string
 	drainConn bool
 	timeout   time.Duration
 	handler   *negroni.Negroni
 }
 
 func (s *service) Name() string {
-	return s.name
+	return env.Get("SERVICE_NAME")
 }
 
 func (s *service) Handler() http.Handler {
@@ -71,18 +72,16 @@ func (s *service) ListenAndServe(addr string) error {
 	return err
 }
 
-func NewService(name string, handlers ...negroni.Handler) Service {
+func NewService(handlers ...negroni.Handler) Service {
 	return &service{
-		name:      name,
 		drainConn: true,
 		timeout:   25 * time.Second,
 		handler:   negroni.New(handlers...),
 	}
 }
 
-func Classic(name string, handler http.Handler) Service {
+func Classic(handler http.Handler) Service {
 	return NewService(
-		name,
 		wrpctxmw.New(),
 		requestidmw.New(),
 		negroni.Wrap(handler),

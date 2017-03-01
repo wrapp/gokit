@@ -37,7 +37,7 @@ func main() {
 		log.WithFields(log.Fields(wrpctx.GetMap(ctx))).Info("Error handler")
 	})
 
-	service := kit.Classic("My service", mux)
+	service := kit.Classic(mux)
 	//service := kit.NewService("My service", []negroni.Handler{
 	//	error.NewErrorMiddleware(),
 	//	// one more

@@ -66,7 +66,7 @@ func NewClient(rIdFunc RequestIDFunc) *TraceClient {
 func NewExtendedClient(rIdFunc RequestIDFunc, client *pester.Client) *TraceClient {
 	return &TraceClient{
 		RequestIDFunc: rIdFunc,
-		Name:          env.Get("SERVICE_NAME"),
+		Name:          env.ServiceName(),
 		client:        client,
 	}
 }

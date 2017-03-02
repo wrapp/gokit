@@ -9,14 +9,12 @@ import (
 
 	"github.com/urfave/negroni"
 
-	"github.com/wrapp/gokit/env"
 	_ "github.com/wrapp/gokit/log"
 	"github.com/wrapp/gokit/middleware/requestidmw"
 	"github.com/wrapp/gokit/middleware/wrpctxmw"
 )
 
 type Service interface {
-	Name() string
 	Handler() http.Handler
 	DrainConnections(bool, time.Duration)
 	ListenAndServe(string) error
@@ -26,10 +24,6 @@ type service struct {
 	drainConn bool
 	timeout   time.Duration
 	handler   *negroni.Negroni
-}
-
-func (s *service) Name() string {
-	return env.Get("SERVICE_NAME")
 }
 
 func (s *service) Handler() http.Handler {

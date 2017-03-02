@@ -13,3 +13,7 @@ func GetDefault(key, def string) string {
 func Get(key string) string {
 	return GetDefault(key, "")
 }
+
+func ServiceName() string {
+	return Get("SERVICE_NAME")
+}

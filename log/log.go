@@ -14,7 +14,7 @@ var jsonFormatter = logrus.JSONFormatter{}
 type wrappFormatter struct{}
 
 func (f *wrappFormatter) Format(entry *logrus.Entry) ([]byte, error) {
-	name := env.Get("SERVICE_NAME")
+	name := env.ServiceName()
 	host, err := os.Hostname()
 	if err != nil {
 		host = err.Error()

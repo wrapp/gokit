@@ -38,16 +38,16 @@ func (a *App) indexHandler(w http.ResponseWriter, req *http.Request) {
 	//c.Get("http://localhost:8080/err")
 }
 
-func (a *App) errHandler(w http.ResponseWriter, req *http.Request) {
+func (a *App) errHandler(w http.ResponseWriter, req *http.Request) error {
 	ctx := req.Context()
-	wrpctx.Set(req.Context(), "error", errormw.NewError(http.StatusServiceUnavailable, "Error"))
 	log.WithFields(log.Fields(wrpctx.GetMap(ctx))).Info("Error handler")
+	return errormw.NewError(http.StatusInternalServerError, "Error")
 }
 
 func (a *App) init() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", a.indexHandler)
-	mux.HandleFunc("/err", a.errHandler)
+	mux.Handle("/err", errormw.ErrorHandler(a.errHandler))
 
 	a.router = mux
 	a.controller = Controller{}

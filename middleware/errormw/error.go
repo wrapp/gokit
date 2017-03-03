@@ -1,12 +1,8 @@
 package errormw
 
-import (
-	"net/http"
+import "net/http"
 
-	"github.com/wrapp/gokit/wrpctx"
-)
-
-type HttpError interface {
+type StatusError interface {
 	Status() int
 	error
 }
@@ -24,29 +20,25 @@ func (e statusError) Error() string {
 	return e.message
 }
 
-type ErrorHandler struct{}
+type ErrorHandler func(w http.ResponseWriter, r *http.Request) error
 
-func (h ErrorHandler) ServeHTTP(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
-	next(w, r)
-	err, ok := wrpctx.Get(r.Context(), "error").(error)
+func (h ErrorHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	err := h(w, r)
+	err, ok := err.(error)
 	if err == nil || !ok {
 		return
 	}
 
 	status := http.StatusInternalServerError
-	if herr, ok := err.(HttpError); ok {
+	if herr, ok := err.(StatusError); ok {
 		status = herr.Status()
 	}
 	http.Error(w, err.Error(), status)
 }
 
-func NewError(status int, message string) HttpError {
+func NewError(status int, message string) StatusError {
 	return statusError{
 		status:  status,
 		message: message,
 	}
-}
-
-func New() *ErrorHandler {
-	return &ErrorHandler{}
 }

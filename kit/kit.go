@@ -7,6 +7,7 @@ import (
 	"os/signal"
 	"time"
 
+	log "github.com/Sirupsen/logrus"
 	"github.com/urfave/negroni"
 
 	_ "github.com/wrapp/gokit/log"
@@ -73,7 +74,7 @@ func NewService(handlers ...negroni.Handler) Service {
 
 func Classic(handler http.Handler) Service {
 	recoverymw := negroni.NewRecovery()
-	recoverymw.ErrorHandlerFunc = recoveryHandlerFunc
+	recoverymw.Logger = log.StandardLogger()
 	recoverymw.PrintStack = false
 
 	return NewService(

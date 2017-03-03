@@ -4,23 +4,23 @@ import (
 	"os"
 	"time"
 
-	"github.com/Sirupsen/logrus"
+	log "github.com/Sirupsen/logrus"
 
 	"github.com/wrapp/gokit/env"
 )
 
-var jsonFormatter = logrus.JSONFormatter{}
+var jsonFormatter = log.JSONFormatter{}
 
 type wrappFormatter struct{}
 
-func (f *wrappFormatter) Format(entry *logrus.Entry) ([]byte, error) {
+func (f *wrappFormatter) Format(entry *log.Entry) ([]byte, error) {
 	name := env.ServiceName()
 	host, err := os.Hostname()
 	if err != nil {
 		host = err.Error()
 	}
 
-	e := entry.WithFields(logrus.Fields{
+	e := entry.WithFields(log.Fields{
 		"service-name": name,
 		"host":         host,
 	})
@@ -32,6 +32,6 @@ func (f *wrappFormatter) Format(entry *logrus.Entry) ([]byte, error) {
 }
 
 func init() {
-	logrus.SetFormatter(&wrappFormatter{})
-	logrus.SetOutput(os.Stdout)
+	log.SetFormatter(&wrappFormatter{})
+	log.SetOutput(os.Stdout)
 }

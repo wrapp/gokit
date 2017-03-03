@@ -4,11 +4,13 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"os"
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/wrapp/gokit/env"
 	"github.com/wrapp/gokit/kit"
 	"github.com/wrapp/gokit/middleware/errormw"
+	"github.com/wrapp/gokit/middleware/jsonrqmw"
 	"github.com/wrapp/gokit/middleware/requestidmw"
 	"github.com/wrapp/gokit/wrpctx"
 )
@@ -28,6 +30,10 @@ type App struct {
 type Controller struct {
 }
 
+type JsonRequest struct {
+	Type string `json:"type"`
+}
+
 func (a *App) indexHandler(w http.ResponseWriter, req *http.Request) {
 	ctx := req.Context()
 	wrpctx.Set(ctx, "key", "value")
@@ -44,10 +50,26 @@ func (a *App) errHandler(w http.ResponseWriter, req *http.Request) error {
 	return errormw.NewError(http.StatusInternalServerError, "Error")
 }
 
+func (a *App) jsonHandler(w http.ResponseWriter, req *http.Request) {
+	ctx := req.Context()
+	json := wrpctx.GetCtxValue(ctx, "json").(*JsonRequest)
+	log.WithField("val", json).Info("JSON...")
+}
+
+func jsonFactory() interface{} {
+	return &JsonRequest{}
+}
+
 func (a *App) init() {
+	wd, err := os.Getwd()
+	if err != nil {
+		panic(err)
+	}
+	schema := fmt.Sprintf("file://%s/main/schema.json", wd)
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", a.indexHandler)
 	mux.Handle("/err", errormw.ErrorHandler(a.errHandler))
+	mux.Handle("/json", jsonrqmw.New(a.jsonHandler, schema, jsonFactory))
 
 	a.router = mux
 	a.controller = Controller{}

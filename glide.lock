@@ -1,5 +1,5 @@
-hash: f7277011370d3d5e92f18b9f251f7d1b4a9112bff89249c273e78dea49583900
-updated: 2017-03-01T20:55:41.720180161+01:00
+hash: 4cf3a5f57aa704dd5f873c163e6bcdfeec8c4a224c14ed9e28f327c0abbcbd72
+updated: 2017-03-03T15:54:49.029499651+01:00
 imports:
 - name: github.com/satori/go.uuid
   version: b061729afc07e77a8aa4fad0a2fd840958f1942a
@@ -9,6 +9,12 @@ imports:
   version: 0208149b40d863d2c1a2f8fe5753096a9cf2cc8b
 - name: github.com/urfave/negroni
   version: c0db5feaa33826cd5117930c8f4ee5c0f565eec6
+- name: github.com/xeipuuv/gojsonpointer
+  version: e0fe6f68307607d540ed8eac07a342c33fa1b54a
+- name: github.com/xeipuuv/gojsonreference
+  version: e02fc20de94c78484cd5ffb007f8af96be030a45
+- name: github.com/xeipuuv/gojsonschema
+  version: e4f482d0deea5bfc0522ab4582c5fdbd2edc98ad
 - name: golang.org/x/sys
   version: a646d33e2ee3172a661fc09bca23bb4889a41bc8
   subpackages:

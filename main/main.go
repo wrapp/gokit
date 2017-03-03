@@ -7,6 +7,8 @@ import (
 	"os"
 
 	log "github.com/Sirupsen/logrus"
+	"github.com/urfave/negroni"
+
 	"github.com/wrapp/gokit/env"
 	"github.com/wrapp/gokit/kit"
 	"github.com/wrapp/gokit/middleware/errormw"
@@ -66,10 +68,14 @@ func (a *App) init() {
 		panic(err)
 	}
 	schema := fmt.Sprintf("file://%s/main/schema.json", wd)
+
+	jsonHandler := negroni.New()
+	jsonHandler.UseHandler(jsonrqmw.New(a.jsonHandler, schema, jsonFactory))
+
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", a.indexHandler)
 	mux.Handle("/err", errormw.ErrorHandler(a.errHandler))
-	mux.Handle("/json", jsonrqmw.New(a.jsonHandler, schema, jsonFactory))
+	mux.Handle("/json", jsonHandler)
 
 	a.router = mux
 	a.controller = Controller{}

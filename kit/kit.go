@@ -75,7 +75,7 @@ func NewService(handlers ...negroni.Handler) Service {
 func Classic(handler http.Handler) Service {
 	recoverymw := negroni.NewRecovery()
 	recoverymw.Logger = log.StandardLogger()
-	recoverymw.PrintStack = true
+	recoverymw.PrintStack = false
 
 	return NewService(
 		wrpctxmw.New(),

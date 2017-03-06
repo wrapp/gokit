@@ -20,6 +20,11 @@ type jsonRequestHandler struct {
 }
 
 func (j *jsonRequestHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	if ctype := r.Header.Get("Content-Type"); !strings.Contains(ctype, "application/json") {
+		http.Error(w, "Content-Type is not application/json", http.StatusBadRequest)
+		return
+	}
+
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)

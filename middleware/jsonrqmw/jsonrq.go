@@ -1,6 +1,7 @@
 package jsonrqmw
 
 import (
+	"context"
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
@@ -18,6 +19,8 @@ type jsonRequestHandler struct {
 	schema     *gojsonschema.Schema
 	objFactory JsonObjectFactory
 }
+
+const jsonKey = "json"
 
 func (j *jsonRequestHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if ctype := r.Header.Get("Content-Type"); !strings.Contains(ctype, "application/json") {
@@ -50,7 +53,7 @@ func (j *jsonRequestHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	ctx := wrpctx.NewWithValue(r.Context(), "json", obj)
+	ctx := wrpctx.NewWithValue(r.Context(), jsonKey, obj)
 	cr := r.WithContext(ctx)
 	j.handler(w, cr)
 }
@@ -61,6 +64,10 @@ func New(h http.HandlerFunc, schemaPath string, objf JsonObjectFactory) http.Han
 		schema:     loadSchema(schemaPath),
 		objFactory: objf,
 	}
+}
+
+func Get(ctx context.Context) interface{} {
+	return wrpctx.GetCtxValue(ctx, jsonKey)
 }
 
 func loadSchema(schemaFile string) *gojsonschema.Schema {

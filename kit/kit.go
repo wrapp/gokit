@@ -44,23 +44,29 @@ func (s *service) ListenAndServe(addr string) error {
 		WriteTimeout: 60 * time.Second,
 	}
 
-	var err error
 	stopChan := make(chan os.Signal)
 	signal.Notify(stopChan, os.Interrupt)
 
+	errorChan := make(chan error)
+
 	go func() {
-		if err = srv.ListenAndServe(); err != nil {
-			close(stopChan)
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			errorChan <- err
 		}
 	}()
 
-	<-stopChan // wait
-	if s.drainConn {
-		ctx, _ := context.WithTimeout(context.Background(), s.timeout)
-		err = srv.Shutdown(ctx)
-	} else {
-		err = srv.Close()
+	var err error
+	select {
+	case <-stopChan:
+		if s.drainConn {
+			ctx, _ := context.WithTimeout(context.Background(), s.timeout)
+			err = srv.Shutdown(ctx)
+		} else {
+			err = srv.Close()
+		}
+	case err = <-errorChan:
 	}
+
 	return err
 }
 

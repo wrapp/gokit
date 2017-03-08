@@ -54,7 +54,7 @@ func (a *App) errHandler(w http.ResponseWriter, req *http.Request) error {
 
 func (a *App) jsonHandler(w http.ResponseWriter, req *http.Request) {
 	ctx := req.Context()
-	json := wrpctx.GetCtxValue(ctx, "json").(*JsonRequest)
+	json := jsonrqmw.Get(ctx).(*JsonRequest)
 	log.WithField("val", json).Info("JSON...")
 }
 

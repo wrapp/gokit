@@ -1,7 +1,0 @@
-package: github.com/wrapp/gokit
-import:
-- package: github.com/urfave/negroni
-- package: github.com/Sirupsen/logrus
-- package: github.com/satori/go.uuid
-- package: github.com/sethgrid/pester
-- package: github.com/xeipuuv/gojsonschema

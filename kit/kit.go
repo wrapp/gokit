@@ -10,7 +10,8 @@ import (
 	log "github.com/Sirupsen/logrus"
 	"github.com/urfave/negroni"
 
-	_ "github.com/wrapp/gokit/log"
+	"github.com/wrapp/gokit/env"
+	kitlog "github.com/wrapp/gokit/log"
 	"github.com/wrapp/gokit/middleware/requestidmw"
 	"github.com/wrapp/gokit/middleware/wrpctxmw"
 )
@@ -18,6 +19,7 @@ import (
 type Service interface {
 	Handler() http.Handler
 	DrainConnections(bool, time.Duration)
+	SetServiceName(string)
 	ListenAndServe(string) error
 }
 
@@ -34,6 +36,10 @@ func (s *service) Handler() http.Handler {
 func (s *service) DrainConnections(drain bool, timeout time.Duration) {
 	s.drainConn = drain
 	s.timeout = timeout
+}
+
+func (s *service) SetServiceName(name string) {
+	kitlog.SetServiceName(name)
 }
 
 func (s *service) ListenAndServe(addr string) error {
@@ -83,10 +89,12 @@ func Classic(handler http.Handler) Service {
 	recoverymw.Logger = log.StandardLogger()
 	recoverymw.PrintStack = false
 
-	return NewService(
+	s := NewService(
 		wrpctxmw.New(),
 		requestidmw.New(),
 		recoverymw,
 		negroni.Wrap(handler),
 	)
+	s.SetServiceName(env.ServiceName())
+	return s
 }

@@ -26,7 +26,6 @@ func requestIDGetter(ctx context.Context) func() string {
 type App struct {
 	controller Controller
 	router     http.Handler
-	service    kit.Service
 }
 
 type Controller struct {
@@ -85,7 +84,7 @@ func main() {
 	app.init()
 
 	srv := kit.Classic(app.router)
-	app.service = srv
+	//srv.SetServiceName("My Service")
 	//service := kit.NewService(
 	//	error.NewErrorMiddleware(),
 	//	// one more

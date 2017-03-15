@@ -15,14 +15,14 @@ import (
 
 type TraceClient struct {
 	RequestIDFunc RequestIDFunc
-	Name          string
+	UserAgent     string
 	client        *pester.Client
 }
 
 type RequestIDFunc func() string
 
 func (t *TraceClient) Do(req *http.Request) (*http.Response, error) {
-	req.Header.Set("User-Agent", t.Name)
+	req.Header.Set("User-Agent", t.UserAgent)
 	requestidmw.SetID(&req.Header, t.RequestIDFunc())
 	return t.client.Do(req)
 }
@@ -56,6 +56,10 @@ func (t *TraceClient) PostForm(url string, data url.Values) (*http.Response, err
 	return t.Post(url, "application/x-www-form-urlencoded", strings.NewReader(data.Encode()))
 }
 
+func (t *TraceClient) SetUserAgent(agent string) {
+	t.UserAgent = agent
+}
+
 func NewClient(rIdFunc RequestIDFunc) *TraceClient {
 	client := pester.New()
 	client.Backoff = pester.LinearBackoff
@@ -66,7 +70,7 @@ func NewClient(rIdFunc RequestIDFunc) *TraceClient {
 func NewExtendedClient(rIdFunc RequestIDFunc, client *pester.Client) *TraceClient {
 	return &TraceClient{
 		RequestIDFunc: rIdFunc,
-		Name:          env.ServiceName(),
+		UserAgent:     env.ServiceName(),
 		client:        client,
 	}
 }

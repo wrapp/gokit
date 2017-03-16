@@ -7,11 +7,11 @@ import (
 	"os/signal"
 	"time"
 
-	log "github.com/Sirupsen/logrus"
 	"github.com/urfave/negroni"
 
 	"github.com/wrapp/gokit/env"
 	kitlog "github.com/wrapp/gokit/log"
+	"github.com/wrapp/gokit/middleware/recoverymw"
 	"github.com/wrapp/gokit/middleware/requestidmw"
 	"github.com/wrapp/gokit/middleware/wrpctxmw"
 )
@@ -85,14 +85,10 @@ func NewService(handlers ...negroni.Handler) Service {
 }
 
 func Classic(handler http.Handler) Service {
-	recoverymw := negroni.NewRecovery()
-	recoverymw.Logger = log.StandardLogger()
-	recoverymw.PrintStack = false
-
 	s := NewService(
 		wrpctxmw.New(),
 		requestidmw.New(),
-		recoverymw,
+		recoverymw.New(),
 		negroni.Wrap(handler),
 	)
 	s.SetServiceName(env.ServiceName())

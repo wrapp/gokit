@@ -5,24 +5,24 @@ import (
 	"time"
 
 	log "github.com/Sirupsen/logrus"
-
-	"github.com/wrapp/gokit/env"
 )
 
-var jsonFormatter = log.JSONFormatter{}
+var jsonFormatter = log.JSONFormatter{
+	TimestampFormat: time.RFC3339,
+	FieldMap: log.FieldMap{
+		log.FieldKeyTime: "timestamp",
+	},
+}
 
-type wrappFormatter struct{}
+type wrappFormatter struct {
+	service string
+}
 
-func (f *wrappFormatter) Format(entry *log.Entry) ([]byte, error) {
-	name := env.ServiceName()
-	host, err := os.Hostname()
-	if err != nil {
-		host = err.Error()
-	}
+var formatter = &wrappFormatter{}
 
+func (f wrappFormatter) Format(entry *log.Entry) ([]byte, error) {
 	e := entry.WithFields(log.Fields{
-		"service-name": name,
-		"host":         host,
+		"service": f.service,
 	})
 
 	e.Time = time.Now().UTC()
@@ -31,7 +31,11 @@ func (f *wrappFormatter) Format(entry *log.Entry) ([]byte, error) {
 	return (&jsonFormatter).Format(e)
 }
 
+func SetServiceName(service string) {
+	formatter.service = service
+}
+
 func init() {
-	log.SetFormatter(&wrappFormatter{})
+	log.SetFormatter(formatter)
 	log.SetOutput(os.Stdout)
 }

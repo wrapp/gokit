@@ -11,7 +11,7 @@ import (
 
 const (
 	headerKey = "X-Request-Id"
-	ctxKey    = "request-id"
+	ctxKey    = "request_id"
 )
 
 type XRequestIDHandler struct {

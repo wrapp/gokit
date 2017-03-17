@@ -13,9 +13,9 @@ import (
 
 	"github.com/wrapp/gokit/middleware/errormw"
 	"github.com/wrapp/gokit/middleware/jsonrqmw"
+	"github.com/wrapp/gokit/middleware/recoverymw"
 	"github.com/wrapp/gokit/middleware/requestidmw"
 	"github.com/wrapp/gokit/middleware/wrpctxmw"
-	"github.com/wrapp/gokit/util"
 	"github.com/wrapp/gokit/wrpctx"
 )
 
@@ -238,23 +238,31 @@ func TestErrorMW(t *testing.T) {
 	})
 }
 
-func TestShortCircuit(t *testing.T) {
+type panicHandler struct{}
+
+func (h panicHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	panic("do panic")
+}
+
+func TestRecoveryMW(t *testing.T) {
 	t.Parallel()
-	e1 := errors.New("first error")
-	e2 := errors.New("second error")
-	err := util.ShortCurcuit(
-		func() error { return e1 },
-		func() error { return e2 },
-	)
-	if err != e1 {
-		t.Errorf("Expected first error got %q", err)
+
+	recovery := recoverymw.Recovery{
+		PanicHandlerFunc: func(err interface{}, stack []byte) {},
+		StackSize:        1024 * 8,
+		PrintStack:       true,
+	}
+	service := NewService(recovery, negroni.Wrap(panicHandler{}))
+
+	r, _ := http.NewRequest("POST", "/", nil)
+	w := httptest.NewRecorder()
+	service.Handler().ServeHTTP(w, r)
+
+	if w.Code != 500 {
+		t.Errorf("Expected 500 got %d", w.Code)
 	}
 
-	err = util.ShortCurcuit(
-		func() error { return nil },
-		func() error { return e2 },
-	)
-	if err != e2 {
-		t.Errorf("Expected second error got %q", err)
+	if !strings.Contains(w.Body.String(), "PANIC!: do panic") {
+		t.Errorf("Expected 'PANIC!: do panic' in body")
 	}
 }

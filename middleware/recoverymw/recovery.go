@@ -22,8 +22,8 @@ func New() Recovery {
 
 func defaultPanicHandler(err interface{}, stack []byte) {
 	log.WithFields(log.Fields{
-		"panic":      err,
-		"stacktrace": string(stack),
+		"panic": err,
+		"data":  log.Fields{"stacktrace": string(stack)},
 	}).Error("PANIC! in http handler")
 }
 

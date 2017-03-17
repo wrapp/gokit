@@ -84,7 +84,7 @@ func NewService(handlers ...negroni.Handler) Service {
 	}
 }
 
-func Classic(handler http.Handler) Service {
+func SimpleService(handler http.Handler) Service {
 	s := NewService(
 		wrpctxmw.New(),
 		requestidmw.New(),

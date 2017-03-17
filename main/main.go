@@ -83,7 +83,7 @@ func main() {
 	app := &App{}
 	app.init()
 
-	srv := kit.Classic(app.router)
+	srv := kit.SimpleService(app.router)
 	//srv.SetServiceName("My Service")
 	//service := kit.NewService(
 	//	error.NewErrorMiddleware(),

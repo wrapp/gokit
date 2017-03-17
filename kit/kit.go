@@ -16,6 +16,8 @@ import (
 	"github.com/wrapp/gokit/middleware/wrpctxmw"
 )
 
+// Service interface provides the functionality of any service. It allows you to
+// define your implementation of a service if you need to.
 type Service interface {
 	Handler() http.Handler
 	DrainConnections(bool, time.Duration)
@@ -29,19 +31,37 @@ type service struct {
 	handler   *negroni.Negroni
 }
 
+// Handler returns the http.Handler of the service. When a service is started this handler is
+// used to serve the requests over HTTP.
 func (s *service) Handler() http.Handler {
 	return s.handler
 }
 
+// DrainConnections allows you to enable or disable graceful shutdowns. This
+// functionality was used on go 1.8. It allows you to wait for in-flight connections
+// before a service can be shutdown. The advantage is the requests will not be
+// killed immediately and gives those requests a chance to finish properly.
+
+// If `drain` is set to true then it will enable graceful shutdowns. Service will
+// wait for `timeout` before shutting down forcefully. If `drain`is set to false
+// then `timeout` is ignored.
 func (s *service) DrainConnections(drain bool, timeout time.Duration) {
 	s.drainConn = drain
 	s.timeout = timeout
 }
 
+// SetServiceName sets the name of the service for all default components. If there are
+// custom components then programmer has the responsibility to set those properly.
 func (s *service) SetServiceName(name string) {
 	kitlog.SetServiceName(name)
 }
 
+// ListenAndServe starts the service on given address. `addr` contains the ip of the
+// interface and port in the form `ip-addr:port` e.g `0.0.0.0:8080`. This is a blocking
+// call unless there is an error which will be returned when function exits. By default
+// graceful shutdowns are enabled and the service will wait for in-flight requests
+// when an OS interrupt is received before shutting down. This behaviour can be turned
+// off with DrainConnections function.
 func (s *service) ListenAndServe(addr string) error {
 	srv := http.Server{
 		Addr:         addr,
@@ -76,6 +96,8 @@ func (s *service) ListenAndServe(addr string) error {
 	return err
 }
 
+// NewService creates a new service with all the custom handlers provided in the arguments.
+// This will not add any default handlers in the service.
 func NewService(handlers ...negroni.Handler) Service {
 	return &service{
 		drainConn: true,
@@ -84,6 +106,15 @@ func NewService(handlers ...negroni.Handler) Service {
 	}
 }
 
+// SimpleService initializes the service with some default middlewares. The `http.Handler`
+// provided will be used as the last handler in the service. `http.Handler` usually contains
+// the endpoints and business logic of the service.
+// Following middlewares are initialized (in order) when calling this function.
+/*
+	- Wrapp Context (wrpctxmw) is a wrapper around `context.Context`.
+	- Request ID (requestidmw) adds a unique id for each incoming request.
+	- Recovery (recoverymw) provides functionality for panic in the handler.
+*/
 func SimpleService(handler http.Handler) Service {
 	s := NewService(
 		wrpctxmw.New(),

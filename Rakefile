@@ -5,5 +5,5 @@ task :test do
 end
 
 task :run  do
-  sh "SERVICE_NAME='main' go run main/main.go"
+  sh "SERVICE_NAME='example' go run example/example.go"
 end

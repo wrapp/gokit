@@ -66,7 +66,7 @@ func (a *App) init() {
 	if err != nil {
 		panic(err)
 	}
-	schema := fmt.Sprintf("file://%s/main/schema.json", wd)
+	schema := fmt.Sprintf("file://%s/example/schema.json", wd)
 
 	jsonHandler := negroni.New()
 	jsonHandler.UseHandler(jsonrqmw.New(a.jsonHandler, schema, jsonFactory))

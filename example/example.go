@@ -41,7 +41,7 @@ func (a *App) indexHandler(w http.ResponseWriter, req *http.Request) {
 	fmt.Fprintf(w, "(%s) %s", requestidmw.GetID(ctx), "Welcome to the home page!")
 	log.WithFields(log.Fields(wrpctx.GetMap(ctx))).Info("Log context...")
 
-	//c := trace.NewClient(requestIDGetter(ctx))
+	//c := trace.New(requestIDGetter(ctx))
 	//c.Get("http://localhost:8080/err")
 }
 

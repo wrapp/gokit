@@ -2,23 +2,25 @@
 Gokit is a standard library for building microservices. It provides tools to solve some common problems so that you
 can focus on building the business logic.
 
+Gokit works with `go 1.8` or greater.
+
 ## Motivation
 It is usual to solve the same problem over and over again in the individual services when building microservices.
 Multiple services end up having duplicate code and it is hard to maintain them. Gokit tries to solve some of these
 common problems so that it is easier to build microservices without duplicating code.
 
 ## Installation and usage
-Gokit can be installed through `go get` or by a dependency manager such as
-[glide](https://github.com/Masterminds/glide).
+It is recommended to use gokit with [glide](https://github.com/Masterminds/glide).
 
-```bash
-go get github.com/wrapp/gokit/kit
-```
-
-or:
-
-```bash
-glide get github.com/wrapp/gokit/kit
+```yaml
+# glide.yaml
+- package: github.com/wrapp/gokit
+  repo: git@github.com:wrapp/gokit.git
+  vcs: git
+  subpackages:
+  - env
+  - kit
+  - middleware/requestidmw
 ```
 
 Import gokit with:
@@ -31,8 +33,8 @@ Rest of the document highlights individual components of gokit in detail. A full
 [here](example/example.go).
 
 ## Creating a service
-A service is created by calling `SimpleService` function in `kit` package. This creates a service and some default 
-middlewares for convinence.
+A service is created by calling `SimpleService` function in `kit` package. This creates a service with predefined set 
+of middlewares for convinence.
 
 ```go
 srv := kit.SimpleService(/* any router that implements http.Handler */)        
@@ -64,12 +66,12 @@ err := srv.ListenAndServe("localhost:8080")
 ## Context
 Gokit provides some wrapper functions for `context.Context`. These wrappers are used internally for setting data in
 context and passing it around in different modules. It is recommended to use these functions when you want to read
-or set data in context. For details have a look at [wrpctx](wrpctx/wrpctx.go) package.
+or set data in context. For further details have a look at [wrpctx](wrpctx/wrpctx.go) package.
 
 ## Logging
 Gokit provides a custom formatter for [logrus](https://github.com/sirupsen/logrus). This formatter adds some extra
 fields to the log entry. The log entry is then formatted to JSON before it is written to the stdout. It is recommended
-to use this default formatter but you can easily override it if it is necessary. See logrus's documentation to see how
+to use this default formatter but you can easily override it if necessary. See logrus's documentation to see how
 to override the default logger. Furthermore, you can use your custom formatter or any other logging library if you want.
 
 ## Connection draining
@@ -95,7 +97,7 @@ through `SimpleService`.  To use a custom list of middlewares use `NewService` i
 ### Wrap Context
 `Default: yes`
 
-Wrapp context is a simple middleware to add some extra functionality around `context.Context`. For example it is not
+Wrapp context is a middleware used to add some extra functionality around `context.Context`. For example it is not
 easy to iterate the keys and values in default context. Wrapp context allows you to do that by getting a copy of map 
 data stored in the context.
 
@@ -124,7 +126,7 @@ This id can then be used in [tracing](#tracing).
 ### Recovery
 `Default: yes`
 
-Recovery middleware provides means to recover from panic that are raised in `http.Handler`. A default handler can be 
+Recovery middleware provides means to recover from panics that are raised in `http.Handler`. A default handler can be 
 created from `New` or you can create your own handler like:
 
 ```go

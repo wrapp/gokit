@@ -1,3 +1,8 @@
+// recoverymw provides a package to recover from panics in http.Handler. It is useful to send a
+// http error to the client instead of crashing the server because of a programming error in
+// http.Handler. Recovery handler recovers from the panic and calls a handler func to handle
+// panic gracefully. It also allows the possibility to log or send the stacktrace to external
+// service.
 package recoverymw
 
 import (
@@ -8,16 +13,22 @@ import (
 	log "github.com/Sirupsen/logrus"
 )
 
+// PanicHandlerFunc is a handler func which is called when middleware recovers from panic in
+// http.Handler
 type PanicHandlerFunc func(interface{}, []byte)
 
-type Recovery struct {
+// RecoveryHandler is struct which holds the PanicHandlerFunc, size of the stacktrace, and
+// a field which tells whether to print the stack in the http.Response or not.
+type RecoveryHandler struct {
 	PanicHandlerFunc PanicHandlerFunc
 	StackSize        int
 	PrintStack       bool
 }
 
-func New() Recovery {
-	return Recovery{defaultPanicHandler, 1024 * 50, false}
+// New generates a default RecoveryHandler. By default panics are logged in stdout with a
+// stacktrace size of 50KB. Stacktrace is not logged to http.Response be default.
+func New() RecoveryHandler {
+	return RecoveryHandler{defaultPanicHandler, 1024 * 50, false}
 }
 
 func defaultPanicHandler(err interface{}, stack []byte) {
@@ -27,7 +38,7 @@ func defaultPanicHandler(err interface{}, stack []byte) {
 	}).Error("PANIC! in http handler")
 }
 
-func (rec Recovery) ServeHTTP(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
+func (rec RecoveryHandler) ServeHTTP(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
 	defer func() {
 		if err := recover(); err != nil {
 			stack := make([]byte, rec.StackSize)

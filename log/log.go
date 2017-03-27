@@ -20,6 +20,11 @@ type wrappFormatter struct {
 
 var formatter = &wrappFormatter{}
 
+// Format formats the log entry in JSON. It also adds `service` key which contains the
+// name of the service. This is useful to distinguish logs per service when you have many
+// different services.
+// The `timestamp` contains the UTC time in `time.RFC3339` format. Message of the log is
+// contained in `msg` key.
 func (f wrappFormatter) Format(entry *log.Entry) ([]byte, error) {
 	e := entry.WithFields(log.Fields{
 		"service": f.service,
@@ -31,6 +36,8 @@ func (f wrappFormatter) Format(entry *log.Entry) ([]byte, error) {
 	return (&jsonFormatter).Format(e)
 }
 
+// SetServiceName sets the name of the service in the formatter which is used in every
+// log entry it prints.
 func SetServiceName(service string) {
 	formatter.service = service
 }

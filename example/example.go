@@ -41,7 +41,7 @@ func (a *App) indexHandler(w http.ResponseWriter, req *http.Request) {
 	fmt.Fprintf(w, "(%s) %s", requestidmw.GetID(ctx), "Welcome to the home page!")
 	log.WithFields(log.Fields(wrpctx.GetMap(ctx))).Info("Log context...")
 
-	//c := trace.NewClient(requestIDGetter(ctx))
+	//c := trace.New(requestIDGetter(ctx))
 	//c.Get("http://localhost:8080/err")
 }
 
@@ -66,7 +66,7 @@ func (a *App) init() {
 	if err != nil {
 		panic(err)
 	}
-	schema := fmt.Sprintf("file://%s/main/schema.json", wd)
+	schema := fmt.Sprintf("file://%s/example/schema.json", wd)
 
 	jsonHandler := negroni.New()
 	jsonHandler.UseHandler(jsonrqmw.New(a.jsonHandler, schema, jsonFactory))
@@ -83,7 +83,7 @@ func main() {
 	app := &App{}
 	app.init()
 
-	srv := kit.Classic(app.router)
+	srv := kit.SimpleService(app.router)
 	//srv.SetServiceName("My Service")
 	//service := kit.NewService(
 	//	error.NewErrorMiddleware(),

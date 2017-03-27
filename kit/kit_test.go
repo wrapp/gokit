@@ -247,7 +247,7 @@ func (h panicHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func TestRecoveryMW(t *testing.T) {
 	t.Parallel()
 
-	recovery := recoverymw.Recovery{
+	recovery := recoverymw.RecoveryHandler{
 		PanicHandlerFunc: func(err interface{}, stack []byte) {},
 		StackSize:        1024 * 8,
 		PrintStack:       true,

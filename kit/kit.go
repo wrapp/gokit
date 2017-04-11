@@ -16,19 +16,25 @@ import (
 	"github.com/wrapp/gokit/middleware/wrpctxmw"
 )
 
+type ShutdownHandlerFunc func()
+
 // Service interface provides the functionality of any service. It allows you to
 // define your implementation of a service if you need to.
 type Service interface {
 	Handler() http.Handler
 	DrainConnections(bool, time.Duration)
+	SetPreShutdownHandler(ShutdownHandlerFunc)
+	SetPostShutdownHandler(ShutdownHandlerFunc)
 	SetServiceName(string)
 	ListenAndServe(string) error
 }
 
 type service struct {
-	drainConn bool
-	timeout   time.Duration
-	handler   *negroni.Negroni
+	drainConn    bool
+	timeout      time.Duration
+	preShutdown  ShutdownHandlerFunc
+	postShutdown ShutdownHandlerFunc
+	handler      *negroni.Negroni
 }
 
 // Handler returns the http.Handler of the service. When a service is started this handler is
@@ -54,6 +60,21 @@ func (s *service) DrainConnections(drain bool, timeout time.Duration) {
 // custom components then programmer has the responsibility to set those properly.
 func (s *service) SetServiceName(name string) {
 	kitlog.SetServiceName(name)
+}
+
+// SetPreShutdownHandler sets a custom `handler` function which is called just before service
+// starts the shutdown process when in connection draining is set. This function has no effect
+// if connection draining is not set. See DrainConnections for more information.
+func (s *service) SetPreShutdownHandler(handler ShutdownHandlerFunc) {
+	s.preShutdown = handler
+}
+
+// SetPostShutdownHandler sets a custom `handler` function which is called right after service
+// shuts down when in connection draining is set. This handler will be called even if there
+// was an error while shutting down the service. This function has no effect if connection
+// draining is not set. See DrainConnections for more information.
+func (s *service) SetPostShutdownHandler(handler ShutdownHandlerFunc) {
+	s.postShutdown = handler
 }
 
 // ListenAndServe starts the service on given address. `addr` contains the ip of the
@@ -85,8 +106,16 @@ func (s *service) ListenAndServe(addr string) error {
 	select {
 	case <-stopChan:
 		if s.drainConn {
+			if s.preShutdown != nil {
+				s.preShutdown()
+			}
+
 			ctx, _ := context.WithTimeout(context.Background(), s.timeout)
 			err = srv.Shutdown(ctx)
+
+			if s.postShutdown != nil {
+				s.postShutdown()
+			}
 		} else {
 			err = srv.Close()
 		}
@@ -113,7 +142,7 @@ func NewService(handlers ...negroni.Handler) Service {
 /*
 	- Wrapp Context (wrpctxmw) is a wrapper around `context.Context`.
 	- Request ID (requestidmw) adds a unique id for each incoming request.
-	- Recovery (recoverymw) provides functionality for panic in the handler.
+	- Recovery (recoverymw) provides functionality to recover from panics in the http.Handler.
 */
 func SimpleService(handler http.Handler) Service {
 	s := NewService(

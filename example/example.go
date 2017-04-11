@@ -85,6 +85,8 @@ func main() {
 
 	srv := kit.SimpleService(app.router)
 	//srv.SetServiceName("My Service")
+	//srv.SetPreShutdownHandler(func() { log.Info("Starting shutdown...") })
+	//srv.SetPostShutdownHandler(func() { log.Info("Shutdown completed") })
 	//service := kit.NewService(
 	//	error.NewErrorMiddleware(),
 	//	// one more
@@ -92,7 +94,7 @@ func main() {
 	//	negroni.Wrap(mux),
 	//...)
 
-	fmt.Printf("Starting service '%s'...\n", env.ServiceName())
+	log.Printf("Starting service '%s'...\n", env.ServiceName())
 	err := srv.ListenAndServe("localhost:8080")
 	if err != nil {
 		log.WithField("error", err.Error()).Error("Service stopped")

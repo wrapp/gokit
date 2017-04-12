@@ -89,6 +89,27 @@ or to set a custom timeout:
 srv.DrainConnections(true, 1 * time.Minute)
 ```
 
+Gokit also provides `pre` and `post` shutdown handler functions which can be set like:
+
+```go
+srv.SetPreShutdownHandler(func() {
+        log.Info("Starting shutdown")
+})
+```
+
+and
+
+```go
+srv.SetPostShutdownHandler(func() {
+        log.Info("Shutdown completed")
+})
+```
+
+There are no handlers set by default.
+
+Note: `post` shutdown handler will be called even if an error occurs while shutting down the server.
+
+
 ## Middlewares
 Gokit provides some middlewares out of the box. Some of the middlewares are added by default when creating the service
 through `SimpleService`.  To use a custom list of middlewares use `NewService` instead. Gokit uses

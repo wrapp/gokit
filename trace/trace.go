@@ -33,7 +33,7 @@ type RequestIDFunc func() string
 // performing this request.
 func (t *TraceClient) Do(req *http.Request) (*http.Response, error) {
 	req.Header.Set("User-Agent", t.UserAgent)
-	requestidmw.SetID(&req.Header, t.RequestIDFunc())
+	requestidmw.SetIDInHeader(&req.Header, t.RequestIDFunc())
 	return t.client.Do(req)
 }
 

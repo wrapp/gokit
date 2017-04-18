@@ -30,7 +30,7 @@ func (h wrpctxTestHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 type reqidTestHandler struct{}
 
 func (h reqidTestHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "%s", requestidmw.GetID(r.Context()))
+	fmt.Fprintf(w, "%s", requestidmw.IDFromCtx(r.Context()))
 }
 
 func TestWrappContext(t *testing.T) {
@@ -58,7 +58,7 @@ func testGenerateRequestID(t *testing.T) {
 	service.Handler().ServeHTTP(w, r)
 
 	if id := w.Header().Get("X-Request-Id"); id == "" {
-		t.Errorf("X-Request-Id was not set ", id)
+		t.Errorf("X-Request-Id was not set in header", id)
 	}
 
 	if b := w.Body.String(); b == "" {

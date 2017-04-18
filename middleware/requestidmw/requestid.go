@@ -23,10 +23,14 @@ const (
 	ctxKey    = "request_id"
 )
 
+type RequestIDFunc func() string
+
+var defGenFunc RequestIDFunc = generateUUID
+
 // XRequestIDHandler contains the generator function of request id. A custom generator
 // function can be used to generate new request ids.
 type XRequestIDHandler struct {
-	GenerateFunc func() string
+	GenerateFunc RequestIDFunc
 }
 
 func (h XRequestIDHandler) ServeHTTP(w http.ResponseWriter, r *http.Request, next http.HandlerFunc) {
@@ -37,7 +41,7 @@ func (h XRequestIDHandler) ServeHTTP(w http.ResponseWriter, r *http.Request, nex
 }
 
 func (h XRequestIDHandler) getOrGenerate(r *http.Request) (string, bool) {
-	id := r.Header.Get(headerKey)
+	id := IDFromHeader(r.Header)
 	if id == "" {
 		id = h.GenerateFunc()
 		return id, true
@@ -49,19 +53,49 @@ func generateUUID() string {
 	return uuid.NewV4().String()
 }
 
-// GetID returns the request-id from a context.Context.
-func GetID(ctx context.Context) string {
-	return wrpctx.Get(ctx, ctxKey).(string)
+// IDFromCtx returns the request-id from a context.Context. If the request-id is not set in the
+// context or it cannot be converted to string then the function will return an empty string.
+func IDFromCtx(ctx context.Context) string {
+	id := wrpctx.Get(ctx, ctxKey)
+	if id == nil {
+		return ""
+	}
+	idStr, ok := id.(string)
+	if !ok {
+		return ""
+	}
+	return idStr
+
 }
 
-// SetID sets the request id in an http.Header
-func SetID(h *http.Header, id string) {
+// IDFromHeader returns the request-id from a http.Header.
+func IDFromHeader(h http.Header) string {
+	return h.Get(headerKey)
+}
+
+// SetIDInHeader sets the request id in http.Header
+func SetIDInHeader(h *http.Header, id string) {
 	h.Set(headerKey, id)
+}
+
+// SetIDInContext sets the request-id in a context.Context
+func SetIDInContext(ctx context.Context, id string) {
+	wrpctx.Set(ctx, ctxKey, id)
+}
+
+// SetDefaultGenFunc gets the default request-id generator function
+func SetDefaultGenFunc(genFunc RequestIDFunc) {
+	defGenFunc = genFunc
+}
+
+// DefaultGenFunc sets the default request-id generator function
+func DefaultGenFunc() RequestIDFunc {
+	return defGenFunc
 }
 
 // New creates a new XRequestIDHandler middleware.
 func New() XRequestIDHandler {
 	return XRequestIDHandler{
-		GenerateFunc: generateUUID,
+		GenerateFunc: defGenFunc,
 	}
 }

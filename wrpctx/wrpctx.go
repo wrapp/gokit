@@ -8,9 +8,9 @@ type ctxMap map[keyType]interface{}
 const mapKey = "wrpctx"
 
 // Set adds a new value in the context against the provided key. This uses a map
-// internally to convinently store key values. Using a map internally allows to
+// internally to conveniently store key values. Using a map internally allows to
 // iterate keys and values stored in the context which is not provided by default
-// context behaviour. The values can be retrieved by Get fuction.
+// context behaviour. The values can be retrieved by Get function.
 func Set(ctx context.Context, key string, value interface{}) {
 	cm := ctx.Value(keyType(mapKey))
 
@@ -49,9 +49,9 @@ func New(ctx context.Context) context.Context {
 }
 
 // NewWithValue creates and returns a new context with the provided value set. This does not use
-// the internal map which was initialzed in New function. This creates a new value in the
+// the internal map which was initialized in New function. This creates a new value in the
 // context which you can do manually by calling WithValue in context.Context package. This
-// calue can be retrieved by GetCtxValue or Value function on context.Context. Recommended
+// value can be retrieved by GetCtxValue or Value function on context.Context. Recommended
 // way to get this value is through GetCtxValue.
 func NewWithValue(ctx context.Context, key string, value interface{}) context.Context {
 	return context.WithValue(ctx, keyType(key), value)

@@ -215,6 +215,13 @@ func requestIDGetter(ctx context.Context) func() string {
         return func() string {
                 return requestidmw.GetID(ctx)
         }
+
+        // It is also possible to create a new request-id if the context is empty or
+        // request is not present
+
+        return func() string {
+                return "generate-new-id" // generate your new id here
+        }
 }
 
 c := trace.New(requestIDGetter(ctx))

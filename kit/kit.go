@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/urfave/negroni"
@@ -92,7 +93,7 @@ func (s *service) ListenAndServe(addr string) error {
 	}
 
 	stopChan := make(chan os.Signal)
-	signal.Notify(stopChan, os.Interrupt)
+	signal.Notify(stopChan, syscall.SIGTERM, syscall.SIGINT)
 
 	errorChan := make(chan error)
 

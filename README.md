@@ -139,7 +139,7 @@ function can also be customised as per user needs by passing `GeneateFunc` func.
 To get the request-id from context: 
 
 ```go
-rid := requestidmw.GetID(ctx)
+rid := requestidmw.IDFromCtx(ctx)
 ```
 
 This id can then be used in [tracing](#tracing).
@@ -213,7 +213,7 @@ Tracing is a way to pass on request-id to other services through http client. Go
 ```go
 func requestIDGetter(ctx context.Context) func() string {
         return func() string {
-                return requestidmw.GetID(ctx)
+                return requestidmw.IDFromCtx(ctx)
         }
 
         // It is also possible to create a new request-id if the context is empty or

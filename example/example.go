@@ -19,7 +19,7 @@ import (
 
 func requestIDGetter(ctx context.Context) func() string {
 	return func() string {
-		return requestidmw.GetID(ctx)
+		return requestidmw.IDFromCtx(ctx)
 	}
 }
 
@@ -38,7 +38,7 @@ type JsonRequest struct {
 func (a *App) indexHandler(w http.ResponseWriter, req *http.Request) {
 	ctx := req.Context()
 	wrpctx.Set(ctx, "key", "value")
-	fmt.Fprintf(w, "(%s) %s", requestidmw.GetID(ctx), "Welcome to the home page!")
+	fmt.Fprintf(w, "(%s) %s", requestidmw.IDFromCtx(ctx), "Welcome to the home page!")
 	log.WithFields(log.Fields(wrpctx.GetMap(ctx))).Info("Log context...")
 
 	//c := trace.New(requestIDGetter(ctx))

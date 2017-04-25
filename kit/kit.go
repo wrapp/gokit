@@ -84,12 +84,17 @@ func (s *service) SetPostShutdownHandler(handler ShutdownHandlerFunc) {
 // graceful shutdowns are enabled and the service will wait for in-flight requests
 // when an OS interrupt is received before shutting down. This behaviour can be turned
 // off with DrainConnections function.
+
+// By default all the timeouts (ReadTimeout, WriteTimeout, IdleTimeout, ReadHeaderTimeout)
+// are set to 60s. These timeouts are set to avoid memory leaks.
 func (s *service) ListenAndServe(addr string) error {
 	srv := http.Server{
-		Addr:         addr,
-		Handler:      s.handler,
-		ReadTimeout:  60 * time.Second,
-		WriteTimeout: 60 * time.Second,
+		Addr:              addr,
+		Handler:           s.handler,
+		ReadTimeout:       60 * time.Second,
+		WriteTimeout:      60 * time.Second,
+		IdleTimeout:       60 * time.Second,
+		ReadHeaderTimeout: 60 * time.Second,
 	}
 
 	stopChan := make(chan os.Signal)

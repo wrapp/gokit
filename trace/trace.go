@@ -1,12 +1,11 @@
 package trace
 
 import (
+	"io"
 	"net/http"
 	"net/url"
-
-	"io"
-
 	"strings"
+	"time"
 
 	"github.com/sethgrid/pester"
 	"github.com/wrapp/gokit/env"
@@ -86,6 +85,7 @@ func (t *TraceClient) SetUserAgent(agent string) {
 func New(rIdFunc RequestIDFunc) *TraceClient {
 	client := pester.New()
 	client.Backoff = pester.LinearBackoff
+	client.Timeout = 60 * time.Second
 	client.MaxRetries = 3
 	return NewExtendedClient(rIdFunc, client)
 }

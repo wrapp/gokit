@@ -6,10 +6,9 @@ import (
 	"net/http"
 	"os"
 
-	log "github.com/Sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 	"github.com/urfave/negroni"
 
-	"github.com/wrapp/gokit/env"
 	"github.com/wrapp/gokit/kit"
 	"github.com/wrapp/gokit/middleware/errormw"
 	"github.com/wrapp/gokit/middleware/jsonrqmw"
@@ -94,7 +93,7 @@ func main() {
 	//	negroni.Wrap(mux),
 	//...)
 
-	log.Printf("Starting service '%s'...\n", env.ServiceName())
+	log.Info("Starting service...")
 	err := srv.ListenAndServe("localhost:8080")
 	if err != nil {
 		log.WithField("error", err.Error()).Error("Service stopped")

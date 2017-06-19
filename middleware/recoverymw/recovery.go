@@ -10,7 +10,7 @@ import (
 	"net/http"
 	"runtime"
 
-	log "github.com/Sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 )
 
 // PanicHandlerFunc is a handler func which is called when middleware recovers from panic in

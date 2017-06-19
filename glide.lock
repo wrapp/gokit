@@ -1,20 +1,20 @@
-hash: 4cf3a5f57aa704dd5f873c163e6bcdfeec8c4a224c14ed9e28f327c0abbcbd72
-updated: 2017-03-03T15:54:49.029499651+01:00
+hash: edc12a034423385678593986f6ad29f8785eff4883aeab52a607602a2dbc0fc5
+updated: 2017-06-19T17:00:35.937224054+02:00
 imports:
 - name: github.com/satori/go.uuid
-  version: b061729afc07e77a8aa4fad0a2fd840958f1942a
+  version: 5bf94b69c6b68ee1b541973bb8e1144db23a194b
 - name: github.com/sethgrid/pester
   version: 8053687f99650573b28fb75cddf3f295082704d7
-- name: github.com/Sirupsen/logrus
-  version: 0208149b40d863d2c1a2f8fe5753096a9cf2cc8b
+- name: github.com/sirupsen/logrus
+  version: 68cec9f21fbf3ea8d8f98c044bc6ce05f17b267a
 - name: github.com/urfave/negroni
-  version: c0db5feaa33826cd5117930c8f4ee5c0f565eec6
+  version: 3019daf414cfd2c51de68c3a535707c0de6e3d83
 - name: github.com/xeipuuv/gojsonpointer
   version: e0fe6f68307607d540ed8eac07a342c33fa1b54a
 - name: github.com/xeipuuv/gojsonreference
   version: e02fc20de94c78484cd5ffb007f8af96be030a45
 - name: github.com/xeipuuv/gojsonschema
-  version: e4f482d0deea5bfc0522ab4582c5fdbd2edc98ad
+  version: 0a98b2bd93655a563d1f23c4407e8f01791b6b31
 - name: golang.org/x/sys
   version: a646d33e2ee3172a661fc09bca23bb4889a41bc8
   subpackages:

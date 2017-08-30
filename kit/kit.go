@@ -97,7 +97,7 @@ func (s *service) ListenAndServe(addr string) error {
 		ReadHeaderTimeout: 60 * time.Second,
 	}
 
-	stopChan := make(chan os.Signal)
+	stopChan := make(chan os.Signal, 1)
 	signal.Notify(stopChan, syscall.SIGTERM, syscall.SIGINT)
 
 	errorChan := make(chan error)
